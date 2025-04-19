@@ -1,0 +1,180 @@
+import React, { useState } from 'react';
+import ProfileModal from '../Modals/Profile';
+import "../../public/css/components/sideDrawer.css";
+import { useNavigate } from 'react-router-dom';
+import { ChatState } from '../../Context/chatProvider';
+import axios from 'axios';
+
+
+const SideDrawer = () => {
+
+  const navigate = useNavigate();
+  const [search, setSearch] = useState('');
+  const [searchResult, setSearchResult] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [loadingChat, setLoadingChat] = useState(false);
+  const [showProfileMenu, setShowProfileMenu] = useState(false);
+  const [showProfileModal, setShowProfileModal] = useState(false);
+  const [showSearchDrawer, setShowSearchDrawer] = useState(false);
+
+  const {
+    setSelectedChat,
+    user,
+    notification,
+    setNotification,
+    chats,
+    setChats,
+  } = ChatState();
+
+
+  // Dummy user data for now
+  const userName = 'Pareekshit Sawant';
+  const userImage = 'https://images.pexels.com/photos/709552/pexels-photo-709552.jpeg?auto=compress&cs=tinysrgb&w=600';
+
+  const handleSearch = async () => {
+    if (!search) {
+      alert("Please enter a search term");
+      return;
+    }
+
+    try {
+      setLoading(true);
+
+      const config = {
+        headers: {
+          Authorization: `Bearer ${user.token}`,
+        },
+      };
+
+      const { data } = await axios.get(`http://localhost:3000/api/users?search=${search}`, config);
+      setLoading(false);
+      setSearchResult(data);
+    } catch (error) {
+      alert("failed to load the search results");
+    }
+
+  };
+
+  const onClose = () =>{
+    setShowSearchDrawer(false);
+    setSearch('');
+  }
+
+  const accessChat = async (userId) => {
+    console.log(userId);
+
+    try {
+      setLoadingChat(true);
+      const config = {
+        headers: {
+          "Content-type": "application/json",
+          Authorization: `Bearer ${user.token}`,
+        },
+      };
+      const { data } = await axios.post(`http://localhost:3000/api/chats`, { userId }, config);
+
+      if (!chats.find((c) => c._id === data._id)) setChats([data, ...chats]);
+      setSelectedChat(data);
+      setLoadingChat(false);
+      onClose();
+    } catch (error) {
+      alert("Error fetching the chat");
+      console.log(error);
+    }
+  };
+
+
+  const logoutHandler = () => {
+    localStorage.removeItem("userInfo");
+    navigate("/");
+  };
+
+  return (
+    <>
+      <div className="navbar">
+        {/* Left: Search */}
+        <div className="navbar-left">
+          <input onClick={()=>setShowSearchDrawer(true)}
+            type="button"
+            value={"🔍Search Users"}
+          />
+        </div>
+
+        {/* Middle: Title */}
+        <div className="navbar-title">Pragyan</div>
+
+        {/* Right: Notifications and Profile */}
+        <div className="navbar-right">
+          <span className="notification-icon">🔔</span>
+          <div className="profile-menu-container">
+            <span
+              className="profile-icon"
+              onClick={() => setShowProfileMenu(!showProfileMenu)}
+            >
+              👤
+            </span>
+
+            {showProfileMenu && (
+              <div className="profile-dropdown">
+                <button onClick={() => setShowProfileModal(true)}>Profile</button>
+                <button onClick={logoutHandler}>Logout</button>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* Profile Modal */}
+      {showProfileModal && (
+        <ProfileModal
+          userName={user.name}
+          userImage={user.pic}
+          onClose={() => setShowProfileModal(false)}
+        />
+      )}
+      {/* Search Sidebar */}
+     
+  <div className={`search-drawer ${showSearchDrawer ? 'open' : ''}`}>
+    <div className="search-drawer-header">
+      <h3>Search Users</h3>
+      <button onClick={() => setShowSearchDrawer(false)}>❌</button>
+    </div>
+
+    <div className="search-drawer-body">
+      <input
+        type="text"
+        placeholder="Type to search..."
+        value={search}
+        onChange={(e) => setSearch(e.target.value)}
+        className="search-input"
+      />
+      <button onClick={handleSearch} className="search-button">🔍 Search</button>
+    </div>
+
+    {loading ? (
+      <p className="loading-text">Still Loading...</p>
+    ) : (
+      <div className="search-result-list">
+        {searchResult.length > 0 ? (
+          searchResult.map((user) => (
+            <div key={user._id} className="search-result-item" onClick={()=>accessChat(user._id)} >
+              <img src={user.pic} alt={user.name} className="user-avatar" />
+              <div className="user-info">
+                <div className="user-name">{user.name}</div>
+                <div className="user-email">{user.email}</div>
+              </div>
+            </div>
+          ))
+        ) : (
+          <p className="no-result-text">No results found</p>
+        )}
+        {loadingChat && <p className="loading-text">Loading Chat...</p>}
+      </div>
+    )}
+  </div>
+
+    </>
+  );
+};
+
+export default SideDrawer;

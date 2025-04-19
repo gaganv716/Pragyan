@@ -1,0 +1,16 @@
+/* styles.css */
+.chat-container {
+    width: 100%;
+    height: 91.5vh;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .chat-boxes {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    flex: 1;
+  }
+  
