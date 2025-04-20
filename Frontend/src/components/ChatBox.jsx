@@ -1,8 +1,18 @@
 import React from 'react'
+import { ChatState } from '../Context/chatProvider'
+import SingleChat from './SingleChat'
+import "./ChatBox.css"
 
-const ChatBox = () => {
+const ChatBox = ({fetchAgain,setFetchAgain}) => {
+  const {selectedChat } = ChatState()
   return (
-    <div>ChatBox</div>
+    <>
+    <div className={`chat-box ${selectedChat ? "show" : "hide"}`}>
+  {/* chat content here */}
+    <SingleChat fetchAgain={fetchAgain} setFetchAgain={setFetchAgain}/>
+</div>
+
+    </>
   )
 }
 

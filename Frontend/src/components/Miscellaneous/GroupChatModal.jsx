@@ -8,7 +8,7 @@ const GroupChatModal = ({ isOpen, onClose }) => {
   const [search, setSearch] = useState('');
   const [searchResult, setSearchResult] = useState([]);
   const [selectedUsers, setSelectedUsers] = useState([]);
-  const { user } = ChatState();
+  const { user,chats,setChats } = ChatState();
 
   const handleSearch = async (query) => {
     setSearch(query);
@@ -38,14 +38,34 @@ const GroupChatModal = ({ isOpen, onClose }) => {
     setSelectedUsers(selectedUsers.filter((u) => u._id !== userToRemove._id));
   };
 
-  const handleCreateGroup = () => {
-    if (!groupName || selectedUsers.length < 3) {
-      alert("Please enter group name and add at least two user.");
+  const handleSubmit = async () => {
+    if (!groupName || !selectedUsers) {
+      alert("Please fill all the fields");
       return;
     }
-    console.log("Group Name:", groupName);
-    console.log("Selected Users:", selectedUsers);
-    // You can add your group creation API here
+
+    try {
+      const config = {
+        headers: {
+          Authorization: `Bearer ${user.token}`,
+        },
+      };
+      const { data } = await axios.post(
+        `http://localhost:3000/api/chats/group`,
+        {
+          name: groupName,
+          users: JSON.stringify(selectedUsers.map((u) => u._id)),
+        },
+        config
+      );
+      console.log("the data is",data);
+      setChats([data, ...chats]);
+      // onClose();
+      alert("New Group Created!");
+    } catch (error) {
+      alert("fialed to create group");
+      console.error("Error creating group chat:", error);
+    }
   };
 
   if (!isOpen) return null;
@@ -93,7 +113,7 @@ const GroupChatModal = ({ isOpen, onClose }) => {
           ))}
         </div>
 
-        <button className="create-btn" onClick={handleCreateGroup}>
+        <button className="create-btn" onClick={handleSubmit}>
           Create Group
         </button>
       </div>

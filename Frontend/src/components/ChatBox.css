@@ -1,0 +1,25 @@
+.chat-box {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    padding: 12px;
+    background-color: white;
+    width: 68%;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+  }
+  
+  @media (max-width: 768px) {
+    .chat-box {
+      width: 100%;
+    }
+  }
+  
+  .chat-box.hide {
+    display: none;
+  }
+  
+  .chat-box.show {
+    display: flex;
+  }
+  

@@ -50,10 +50,18 @@ const MyChats = ({ fetchAgain }) => {
         pic: "https://cdn-icons-png.flaticon.com/512/1946/1946429.png",
       };
     } else {
+      if (!Array.isArray(chat.users)) {
+        return {
+          name: "Unknown User",
+          email: "Unknown",
+          pic: "https://cdn-icons-png.flaticon.com/512/149/149071.png",
+        };
+      }
+  
       const otherUser = chat.users.find((u) => u._id !== loggedUser?._id);
       return {
-        name: otherUser?.name,
-        email: otherUser?.email,
+        name: otherUser?.name || "Unknown",
+        email: otherUser?.email || "Unknown",
         pic: otherUser?.pic || "https://cdn-icons-png.flaticon.com/512/149/149071.png",
       };
     }
