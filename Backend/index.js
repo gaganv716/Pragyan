@@ -6,6 +6,7 @@ const { configDotenv } = require('dotenv');
 configDotenv();
 const userRoutes = require('./Routes/UserRoutes');
 const chatRoutes = require('./Routes/chatRoutes');
+const messageRoutes = require('./Routes/messageRoutes');
 const mongoose = require('mongoose');
 const jwt = require('jsonwebtoken');
 
@@ -36,6 +37,7 @@ app.get('/', (req, res) => {
 
 app.use("/api/users",userRoutes);
 app.use("/api/chats",chatRoutes);
+app.use("/api/message",messageRoutes);
 
 
 app.get("/api/chats/:id",(req,res)=>{
