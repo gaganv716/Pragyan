@@ -2,8 +2,10 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { ChatState } from '../../Context/chatProvider';
+import { useCustomToast } from '../Miscellaneous/Toast';
 
 const Login = () => {
+  const { showToast } = useCustomToast();
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -22,13 +24,27 @@ const Login = () => {
 
   console.log(response);
   if(response.status >= 200 && response.status < 300){
-    alert('User logged in successfully'); 
+    showToast({
+      title: "Success!",
+      description: "User logged in successfully",
+      status: "success",
+      duration: 5000,
+      isClosable: true,
+      position: "top-left",
+    });
     setUser(response.data);
     localStorage.setItem('userInfo', JSON.stringify(response.data));
     navigate('/chats');
   }
     else{
-      alert('Something went wrong! could not log in');
+      showToast({
+        title: "Error Occurred!",
+        description: "Something went wrong! could not log in",
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+        position: "top-left",
+      });
     } 
     setLoading(false); 
   };

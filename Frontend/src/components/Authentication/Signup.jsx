@@ -1,9 +1,12 @@
 
 import React,{useState} from 'react'
 import axios from 'axios';
+import { useCustomToast } from '../Miscellaneous/Toast';
 
  
 const Signup = () => {
+
+  const { showToast } = useCustomToast();
 
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
@@ -13,6 +16,7 @@ const Signup = () => {
   const [show,setShow] = useState(false);
   const [loading,setLoading] = useState(false);
 
+
   const handleToggle = () => {
     setShow(!show);
   }
@@ -21,7 +25,15 @@ const Signup = () => {
   const submitHandler = async (e) => { 
     e.preventDefault();
     if(password !== confirmPassword){
-      alert('Password does not match');
+      ('Password does not match');
+      showToast({
+        title: "Error Occurred!",
+        description: "Password does not match",
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+        position: "top-left",
+      });
       return;
     }
     setLoading(true);
@@ -33,12 +45,26 @@ const Signup = () => {
     },{withCredentials:true,validateStatus:false});
     console.log(response);
     if(response.status >= 200 && response.status < 300){
-      alert('User registered successfully');
+      showToast({
+        title: "Error Occurred!",
+        description: "User registered successfully",
+        status: "success",
+        duration: 5000,
+        isClosable: true,
+        position: "top-left",
+      });
       localStorage.setItem('user', JSON.stringify(response.data));
     navigate('/home');
     setLoading(false);
    }else{
-      alert('Something went wrong');
+      showToast({
+        title: "Error Occurred!",
+        description: "Something went wrong",
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+        position: "top-left",
+      });
       setLoading(false);
    }
   }

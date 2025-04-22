@@ -4,9 +4,10 @@ import "../../public/css/components/sideDrawer.css";
 import { useNavigate } from 'react-router-dom';
 import { ChatState } from '../../Context/chatProvider';
 import axios from 'axios';
-
+import { useCustomToast } from "../Miscellaneous/Toast";
 
 const SideDrawer = () => {
+  
 
   const navigate = useNavigate();
   const [search, setSearch] = useState('');
@@ -33,7 +34,15 @@ const SideDrawer = () => {
 
   const handleSearch = async () => {
     if (!search) {
-      alert("Please enter a search term");
+      
+      showToast({
+        title: "Error Occurred!",
+        description: "Please enter a search term",
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+        position: "top-left",
+      });
       return;
     }
 
@@ -50,7 +59,15 @@ const SideDrawer = () => {
       setLoading(false);
       setSearchResult(data);
     } catch (error) {
-      alert("failed to load the search results");
+      
+      showToast({
+        title: "Error Occurred!",
+        description: "Failed to load the search results",
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+        position: "top-left",
+      });
     }
 
   };
@@ -78,7 +95,15 @@ const SideDrawer = () => {
       setLoadingChat(false);
       onClose();
     } catch (error) {
-      alert("Error fetching the chat");
+    
+      showToast({
+        title: "Error Occurred!",
+        description: "Error fetching the chat",
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+        position: "top-left",
+      });
       console.log(error);
     }
   };

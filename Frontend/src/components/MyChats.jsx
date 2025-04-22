@@ -67,8 +67,6 @@ const MyChats = ({ fetchAgain }) => {
     }
   };
 
-  console.log("Chats:", chats);
-
   return (
     <div className="myChatsContainer">
       <div className="myChatsHeader">

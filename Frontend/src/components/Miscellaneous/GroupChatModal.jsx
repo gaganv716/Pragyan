@@ -2,8 +2,12 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import './GroupChatModal.css';
 import { ChatState } from "../../Context/chatProvider";
+import { useCustomToast } from "../Miscellaneous/Toast";
 
 const GroupChatModal = ({ isOpen, onClose }) => {
+
+  const { showToast } = useCustomToast();
+
   const [groupName, setGroupName] = useState('');
   const [search, setSearch] = useState('');
   const [searchResult, setSearchResult] = useState([]);
@@ -40,7 +44,14 @@ const GroupChatModal = ({ isOpen, onClose }) => {
 
   const handleSubmit = async () => {
     if (!groupName || !selectedUsers) {
-      alert("Please fill all the fields");
+      showToast({
+        title: "Error Occurred!",
+        description: "Please fill all the fields",
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+        position: "top-left",
+      });
       return;
     }
 
@@ -61,9 +72,23 @@ const GroupChatModal = ({ isOpen, onClose }) => {
       console.log("the data is",data);
       setChats([data, ...chats]);
       // onClose();
-      alert("New Group Created!");
+      showToast({
+        title: "Success!",
+        description: "New Group Created!",
+        status: "success",
+        duration: 5000,
+        isClosable: true,
+        position: "top-left",
+      });
     } catch (error) {
-      alert("fialed to create group");
+      showToast({
+        title: "Error Occurred!",
+        description: "Failed to create group",
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+        position: "top-left",
+      });
       console.error("Error creating group chat:", error);
     }
   };
