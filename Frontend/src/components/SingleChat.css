@@ -43,6 +43,10 @@
     background-color: #fafafa;
   }
   
+  .typing-indicator{
+    background-color: #fafafa;
+  }
+
   .placeholder-text {
     color: #888;
     text-align: center;

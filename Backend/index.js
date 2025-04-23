@@ -10,6 +10,7 @@ const messageRoutes = require('./Routes/messageRoutes');
 const mongoose = require('mongoose');
 const jwt = require('jsonwebtoken');
 
+
 const url = process.env.MONGODB_URL;
 // mongoose.connect(url,{useNewUrlParser:true,useUnifiedTopology:true}).then(()=>{
 //     console.log("Connected to MongoDB");
@@ -47,6 +48,66 @@ app.get("/api/chats/:id",(req,res)=>{
     res.send(chats.default.find((chat)=>chat._id===req.params.id));
 })
 
-app.listen(port, () => {
+const server = app.listen(port, () => {
     console.log(`Server is running on http://localhost:${port}`);
 });
+
+const io = require("socket.io")(server, {
+    pingTimeout: 60000,
+    cors: {
+        origin: "http://localhost:5173",
+        methods: ["GET", "POST"],
+        credentials:true
+    },
+});
+
+
+io.on("connection", (socket) => {
+    console.log("Connected to socket.io");
+
+    socket.on("setup", (userData) => {
+        try {
+            socket.join(userData._id);
+            console.log(userData._id);
+            socket.emit("connected");
+        } catch (error) {
+            console.error("Error in socket setup:", error.message);
+        }
+    });
+
+    socket.on("join chat",(room)=>{
+        try{
+            socket.join(room);
+            console.log("User joined room: " + room);
+        }catch(error){
+            console.error("Error joining room:", error.message);
+        }
+    })
+
+    socket.on("typing", (room) => socket.in(room).emit("typing"));
+    socket.on("stop typing", (room) => socket.in(room).emit("stop typing"));
+
+    socket.on("new message", (newMessageRecieved) => {
+        try {
+            const chat = newMessageRecieved.chat;
+            if (!chat.users) return console.log("chat.users not defined");
+
+            chat.users.forEach((user) => {
+                if (user._id == newMessageRecieved.sender._id) return;
+                socket.in(user._id).emit("message received", newMessageRecieved);
+            });
+        } catch (error) {
+            console.error("Error in new message event:", error.message);
+        }
+    })
+
+    socket.off("setup", () => {
+        console.log("USER DISCONNECTED");
+        socket.leave(userData._id);
+    });
+
+});
+
+
+
+   

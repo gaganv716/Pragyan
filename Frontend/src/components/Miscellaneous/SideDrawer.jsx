@@ -17,7 +17,8 @@ const SideDrawer = () => {
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const [showProfileModal, setShowProfileModal] = useState(false);
   const [showSearchDrawer, setShowSearchDrawer] = useState(false);
-
+  const [showNotifications, setShowNotifications] = useState(false);
+  const {showToast} = useCustomToast();
   const {
     setSelectedChat,
     user,
@@ -130,7 +131,51 @@ const SideDrawer = () => {
 
         {/* Right: Notifications and Profile */}
         <div className="navbar-right">
-          <span className="notification-icon">🔔</span>
+        <div className="notification-container">
+  <span
+    className="notification-icon"
+    onClick={() => setShowNotifications((prev) => !prev)}
+  >
+    🔔 {notification.length > 0 && <span className="badge">{notification.length}</span>}
+  </span>
+
+  {showNotifications && (
+    <div className="notification-dropdown">
+      {notification.length === 0 ? (
+        <div className="notification-item">No new messages</div>
+      ) : (
+        notification.map((notif, index) => {
+          const chat = notif.chat;
+        
+          // Safety check
+          if (!chat || !chat.users) return null;
+        
+          const sender = !chat.isGroupChat
+            ? chat.users.find((u) => u._id !== user._id)
+            : null;
+        
+          return (
+            <div
+              key={index}
+              className="notification-item"
+              onClick={() => {
+                setSelectedChat(chat);
+                setNotification(notification.filter((n) => n !== notif));
+                setShowNotifications(false);
+              }}
+            >
+              New message from{" "}
+              {chat.isGroupChat
+                ? chat.chatName
+                : sender?.name || "Unknown"}
+            </div>
+          );
+        })
+      )}
+    </div>
+  )}
+</div>
+
           <div className="profile-menu-container">
             <span
               className="profile-icon"
