@@ -2,9 +2,10 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: #333;
+  background: #697ee9bd;
   padding: 10px 20px;
   color: #fff;
+  padding-top: 10px;
 }
 
 .navbar-left {
@@ -235,4 +236,37 @@
   text-align: center;
   box-shadow: 0 0 5px rgba(0, 0, 0, 0.15);
   transition: all 0.2s ease;
+}
+
+
+.st-draw-button, .Signup-form .st-draw-button, .login-button {
+  display: inline-block;
+  width: 50%;
+  padding: 12px 20px;
+  font-size: 17px;
+  font-weight: 600;
+  color: #ffffff;
+  background: linear-gradient(135deg, #a6c625 0%, #cfb117 100%);
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 8px 16px rgba(91, 121, 243, 0.3);
+  letter-spacing: 0.5px;
+}
+
+/* Hover effect */
+.st-draw-button:hover, .Signup-form .st-draw-button:hover, .login-button:hover {
+  background: linear-gradient(135deg, #adf456 0%, #17bd4e 100%);
+  box-shadow: 0 12px 20px rgba(91, 121, 243, 0.4);
+}
+
+/* Active (click) effect */
+.st-draw-button:active, .Signup-form .st-draw-button:active, .login-button:active {
+  transform: scale(0.98);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.st-draw-button, .Signup-form .st-draw-button, .login-button {
+  animation: pulse 1.5s ease-in-out infinite alternate;
 }

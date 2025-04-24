@@ -120,7 +120,7 @@ const SideDrawer = () => {
       <div className="navbar">
         {/* Left: Search */}
         <div className="navbar-left">
-          <input onClick={()=>setShowSearchDrawer(true)}
+          <input className='st-draw-button' onClick={()=>setShowSearchDrawer(true)}
             type="button"
             value={"🔍Search Users"}
           />

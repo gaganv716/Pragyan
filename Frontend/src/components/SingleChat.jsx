@@ -26,6 +26,9 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
   const [loading, setLoading] = useState(false);
   const [newMessage, setNewMessage] = useState('');
   const [socketConnected, setSocketConnected] = useState(false);
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [uploading, setUploading] = useState(false);
+
 
   const { user, selectedChat, setSelectedChat, notification, setNotification } = ChatState();
   const [isProfileOpen, setIsProfileOpen] = useState(false);
@@ -59,6 +62,35 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
     socket.on("stop typing",()=>setIsTyping(false));
 
   },[]);
+
+  const uploadToCloudinary = async (file) => {
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append('upload_preset', 'Chat_App');
+    formData.append('cloud_name', 'djqdchjjo');
+  
+    try {
+      setUploading(true);
+      const { data } = await axios.post(
+        "https://api.cloudinary.com/v1_1/djqdchjjo/auto/upload", // auto will auto-detect the type
+        formData
+      );
+      setUploading(false);
+      return data.secure_url;
+    } catch (error) {
+      setUploading(false);
+      showToast({
+        title: "Upload Failed",
+        description: "Could not upload media file",
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+        position: "top-left",
+      });
+      return null;
+    }
+  };
+  
 
   const fetchMessages = async () => {
     if (!selectedChat) return;
@@ -113,7 +145,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
 
 
 
-  const handleSendMessage = async (e) => {
+const handleSendMessage = async () => {
     socket.emit("stop typing", selectedChat._id);
     try {
       const config = {
@@ -122,18 +154,34 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
           Authorization: `Bearer ${user.token}`,
         },
       };
-      setNewMessage("");
+  
+      let mediaUrl = null;
+      let messageType = "text";
+  
+      if (selectedFile) {
+        mediaUrl = await uploadToCloudinary(selectedFile);
+        if (!mediaUrl) return;
+  
+        const fileType = selectedFile.type.split("/")[0]; // image, audio, video
+        messageType = fileType;
+      }
+  
       const { data } = await axios.post(
         "http://localhost:3000/api/message",
         {
-          content: newMessage,
+          content: messageType === "text" ? newMessage : "",
           chatId: selectedChat,
+          mediaUrl,
+          messageType,
         },
         config
       );
+  
       socket.emit("new message", data);
       setMessages([...messages, data]);
-    } catch (error){
+      setNewMessage("");
+      setSelectedFile(null);
+    } catch (error) {
       showToast({
         title: "Error Occurred!",
         description: "Failed to send the message to user",
@@ -143,7 +191,8 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
         position: "top-left",
       });
     }
-  }
+  };
+  
 
   let lastTypingTime = 0; 
 
@@ -183,7 +232,7 @@ const typingHandler = (e) => {
 
             <div className="chat-actions">
               {!selectedChat.isGroupChat && (
-                <button onClick={handleProfileOpen} className="profile-btn">
+                <button onClick={handleProfileOpen} className="profile-btn ">
                   <RxAvatar />
                 </button>
               )}
@@ -220,16 +269,31 @@ const typingHandler = (e) => {
               style={{marginBottom:15,marginLeft:0}}
               />
             </div>)}
-          <div className="chat-input-area">
-            <input
-              type="text"
-              placeholder="Type a message..."
-              className="chat-input"
-              value={newMessage}
-              onChange={typingHandler}
-            />
-            <button className="send-button" onClick={handleSendMessage}>Send</button>
-          </div>
+            <div className="chat-input-area">
+  <input
+    type="text"
+    placeholder="Type a message..."
+    className="chat-input"
+    value={newMessage}
+    onChange={typingHandler}
+    disabled={uploading}
+  />
+
+  <label className="upload-icon">
+    +
+    <input
+      type="file"
+      accept="image/*,audio/*,video/*"
+      style={{ display: "none" }}
+      onChange={(e) => setSelectedFile(e.target.files[0])}
+    />
+  </label>
+
+  <button className="send-button" onClick={handleSendMessage} disabled={uploading}>
+    {uploading ? "Sending..." : "Send"}
+  </button>
+</div>
+
 
           {/* Profile Modal */}
           {isProfileOpen && (

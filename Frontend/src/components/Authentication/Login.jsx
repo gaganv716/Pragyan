@@ -85,10 +85,10 @@ const Login = () => {
             }}>{show?"Hide":"Show"}</button>
           </div>
          
-          <button type='submit'>Login</button>
+          <button className='st-button' type='submit'>Login</button>
           <br /><br />
       
-          <button onClick={getCred}></button>
+          <button className='st-button' onClick={getCred}>Get Guest User Credentils</button>
           {/* <button type="submit" className="login-button">Login</button> */}
         </form>
       </div>
