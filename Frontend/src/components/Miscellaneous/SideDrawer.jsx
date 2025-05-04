@@ -181,7 +181,7 @@ const SideDrawer = () => {
               className="profile-icon"
               onClick={() => setShowProfileMenu(!showProfileMenu)}
             >
-              👤
+              <img src={user.pic} alt="" />
             </span>
 
             {showProfileMenu && (
@@ -193,7 +193,6 @@ const SideDrawer = () => {
           </div>
         </div>
       </div>
-
       {/* Profile Modal */}
       {showProfileModal && (
         <ProfileModal

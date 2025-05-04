@@ -61,6 +61,29 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
     socket.on("typing",()=>setIsTyping(true));
     socket.on("stop typing",()=>setIsTyping(false));
 
+    socket.on("abuse:warning", (data) => {
+      showToast({
+        title: "Warning",
+        description: data?.message || "You have received a warning.",
+        status: "warning",
+        duration: 7000,
+        isClosable: true,
+        position: "top",
+      });
+    });
+
+    socket.on("abuse:alert", (data) => {
+      showToast({
+        title: "Alert",
+        description: data?.message || "You have received a warning.",
+        status: "error",
+        duration: 7000,
+        isClosable: true,
+        position: "top",
+      });
+    });
+
+
   },[]);
 
   const uploadToCloudinary = async (file) => {
