@@ -4,6 +4,9 @@ import './UpdateGroupChatModel.css';
 import axios from 'axios';
 import { useCustomToast } from "../Miscellaneous/Toast";
 
+const Backend = import.meta.env.VITE_BACKEND_URL;
+const Cloudinary = import.meta.env.VITE_CLOUDINARY_URL ;
+
 const UpdateGroupChatModel = ({ fetchAgain, setFetchAgain, onClose, fetchMessages }) => {
   const [groupChatName, setGroupChatName] = useState("");
   const [search, setSearch] = useState("");
@@ -22,7 +25,7 @@ const UpdateGroupChatModel = ({ fetchAgain, setFetchAgain, onClose, fetchMessage
     };
 
     try {
-      const { data } = await axios.get(`http://localhost:3000/api/users?search=${query}`, config);
+      const { data } = await axios.get(`${Backend}/api/users?search=${query}`, config);
       setSearchResult(data);
     } catch (error) {
       showToast({
@@ -43,7 +46,7 @@ const UpdateGroupChatModel = ({ fetchAgain, setFetchAgain, onClose, fetchMessage
     };
 
     try {
-      const { data } = await axios.put(`http://localhost:3000/api/chats/rename`, {
+      const { data } = await axios.put(`${Backend}/api/chats/rename`, {
         chatId: selectedChat._id,
         chatName: groupChatName
       }, config);
@@ -80,7 +83,7 @@ const UpdateGroupChatModel = ({ fetchAgain, setFetchAgain, onClose, fetchMessage
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${user.token}` },
       };
 
-      const { data } = await axios.put(`http://localhost:3000/api/chats/groupremove`, {
+      const { data } = await axios.put(`${Backend}/api/chats/groupremove`, {
         chatId: selectedChat._id,
         userId: user1._id
       }, config);
@@ -109,7 +112,7 @@ const UpdateGroupChatModel = ({ fetchAgain, setFetchAgain, onClose, fetchMessage
     };
 
     try {
-      const { data } = await axios.put(`http://localhost:3000/api/chats/groupadd`, {
+      const { data } = await axios.put(`${Backend}/api/chats/groupadd`, {
         chatId: selectedChat._id,
         userId: userToAdd._id,
       }, config);

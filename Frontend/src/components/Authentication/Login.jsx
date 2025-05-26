@@ -4,6 +4,10 @@ import { useNavigate } from 'react-router-dom';
 import { ChatState } from '../../Context/chatProvider';
 import { useCustomToast } from '../Miscellaneous/Toast';
 
+
+const Backend = import.meta.env.VITE_BACKEND_URL;
+const Cloudinary = import.meta.env.VITE_CLOUDINARY_URL ;
+
 const Login = () => {
   const { showToast } = useCustomToast();
   const navigate = useNavigate();
@@ -17,7 +21,7 @@ const Login = () => {
     e.preventDefault();
     console.log('Login attempt:', { email, password });
     setLoading(true);
-    const response = await axios.post('http://localhost:3000/api/users/login', {
+    const response = await axios.post(`${Backend}/api/users/login`, {
       email,
       password
     },{withCredentials:true,validateStatus:false});

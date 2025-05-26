@@ -16,6 +16,9 @@ const Signup = () => {
   const [show, setShow] = useState(false);
   const [loading, setLoading] = useState(false);
 
+  const Backend = import.meta.env.VITE_BACKEND_URL;
+  const Cloudinary = import.meta.env.VITE_CLOUDINARY_URL ;
+
   const handleToggle = (e) => {
     e.preventDefault();
     setShow((prev) => !prev);
@@ -46,7 +49,7 @@ const Signup = () => {
     formData.append('cloud_name', 'djqdchjjo');
 
     try {
-      const res = await fetch('https://api.cloudinary.com/v1_1/djqdchjjo/image/upload', {
+      const res = await fetch(`${Cloudinary}/image/upload`, {
         method: 'POST',
         body: formData,
       });
@@ -101,7 +104,7 @@ const Signup = () => {
 
     try {
       const response = await axios.post(
-        'http://localhost:3000/api/users',
+        `${Backend}/api/users`,
         {
           name,
           email,

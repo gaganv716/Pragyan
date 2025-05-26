@@ -4,6 +4,10 @@ import './GroupChatModal.css';
 import { ChatState } from "../../Context/chatProvider";
 import { useCustomToast } from "../Miscellaneous/Toast";
 
+
+const Backend = import.meta.env.VITE_BACKEND_URL;
+const Cloudinary = import.meta.env.VITE_CLOUDINARY_URL ;
+
 const GroupChatModal = ({ isOpen, onClose }) => {
 
   const { showToast } = useCustomToast();
@@ -26,7 +30,7 @@ const GroupChatModal = ({ isOpen, onClose }) => {
           Authorization: `Bearer ${user.token}`,
         },
       };
-      const { data } = await axios.get(`http://localhost:3000/api/users?search=${query}`, config);
+      const { data } = await axios.get(`${Backend}/api/users?search=${query}`, config);
       setSearchResult(data);
     } catch (error) {
       console.error("Error searching users:", error);
@@ -62,7 +66,7 @@ const GroupChatModal = ({ isOpen, onClose }) => {
         },
       };
       const { data } = await axios.post(
-        `http://localhost:3000/api/chats/group`,
+        `${Backend}/api/chats/group`,
         {
           name: groupName,
           users: JSON.stringify(selectedUsers.map((u) => u._id)),

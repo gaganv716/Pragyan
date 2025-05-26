@@ -1,9 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import {ChatState} from '../Context/chatProvider'
+import { ChatState } from '../Context/chatProvider';
 import { useCustomToast } from "../components/Miscellaneous/Toast";
 import axios from 'axios';
 import './MyChats.css';
 import GroupChatModal from '../components/Miscellaneous/GroupChatModal'; // import your modal
+
+const Backend = import.meta.env.VITE_BACKEND_URL;
+const Cloudinary = import.meta.env.VITE_CLOUDINARY_URL;
 
 const MyChats = ({ fetchAgain }) => {
   const [loggedUser, setLoggedUser] = useState();
@@ -21,7 +24,7 @@ const MyChats = ({ fetchAgain }) => {
         },
       };
 
-      const { data } = await axios.get('http://localhost:3000/api/chats', config);
+      const { data } = await axios.get(`${Backend}/api/chats`, config);
       setChats(data);
     } catch (error) {
       console.error('Error fetching chats:', error);
@@ -57,12 +60,21 @@ const MyChats = ({ fetchAgain }) => {
           pic: "https://cdn-icons-png.flaticon.com/512/149/149071.png",
         };
       }
-  
+
       const otherUser = chat.users.find((u) => u._id !== loggedUser?._id);
+
+      // Ensure pic URL uses HTTPS
+      let pic = otherUser?.pic || "https://cdn-icons-png.flaticon.com/512/149/149071.png";
+      
+      // Force HTTPS for Cloudinary URLs
+      if (pic.startsWith("http://res.cloudinary.com")) {
+        pic = pic.replace("http://", "https://");
+      }
+
       return {
         name: otherUser?.name || "Unknown",
         email: otherUser?.email || "Unknown",
-        pic: otherUser?.pic || "https://cdn-icons-png.flaticon.com/512/149/149071.png",
+        pic,  // Use the updated pic with HTTPS
       };
     }
   };

@@ -13,8 +13,11 @@ import { useCustomToast } from "../components/Miscellaneous/Toast";
 import io from 'socket.io-client';
 import Lottie from 'react-lottie';
 import animationData from '../animations/typing.json'
+import ReportModal from './Modals/ReportModal';
 
-const ENDPOINT = "http://localhost:3000/";
+const Backend = import.meta.env.VITE_BACKEND_URL;
+const Cloudinary = import.meta.env.VITE_CLOUDINARY_URL;
+
 var socket, selectedChatCompare;
 
 
@@ -32,9 +35,13 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
 
   const { user, selectedChat, setSelectedChat, notification, setNotification } = ChatState();
   const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
   const [isGroupModalOpen, setIsGroupModalOpen] = useState(false);
   const [typing, setTyping] = useState(false);
   const [isTyping, setIsTyping] = useState(false);
+
+  const toggleModal = () => setIsModalOpen(prev => !prev);
 
   const defaultOptions = {
     loop: true,
@@ -52,7 +59,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
   const handleGroupModalClose = () => setIsGroupModalOpen(false);
 
   useEffect(() => {
-    socket = io(ENDPOINT);
+    socket = io(`${Backend}`);
     socket.emit("setup", user);
     socket.on("connected", () => {
       setSocketConnected(true);
@@ -73,6 +80,30 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
     });
 
     socket.on("abuse:alert", (data) => {
+      toggleModal();
+      showToast({
+        title: "Alert",
+        description: data?.message || "You have received a warning.",
+        status: "error",
+        duration: 7000,
+        isClosable: true,
+        position: "top",
+      });
+    });
+
+    socket.on("abuse:warning:video", (data) => {
+      showToast({
+        title: "Warning",
+        description: data?.message || "You have received a warning.",
+        status: "warning",
+        duration: 7000,
+        isClosable: true,
+        position: "top",
+      });
+    });
+
+    socket.on("abuse:alert:video", (data) => {
+      toggleModal();
       showToast({
         title: "Alert",
         description: data?.message || "You have received a warning.",
@@ -95,7 +126,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
     try {
       setUploading(true);
       const { data } = await axios.post(
-        "https://api.cloudinary.com/v1_1/djqdchjjo/auto/upload", // auto will auto-detect the type
+        `${Cloudinary}/auto/upload`, // auto will auto-detect the type
         formData
       );
       setUploading(false);
@@ -128,7 +159,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
       setLoading(true);
 
       const { data } = await axios.get(
-        `http://localhost:3000/api/message/${selectedChat._id}`,
+        `${Backend}/api/message/${selectedChat._id}`,
         config
       );
       setMessages(data);
@@ -190,7 +221,7 @@ const handleSendMessage = async () => {
       }
   
       const { data } = await axios.post(
-        "http://localhost:3000/api/message",
+        `${Backend}/api/message`,
         {
           content: messageType === "text" ? newMessage : "",
           chatId: selectedChat,
@@ -246,6 +277,13 @@ const typingHandler = (e) => {
     <div className="single-chat-container">
       {selectedChat ? (
         <>
+
+
+      <div>
+      <ReportModal isOpen={isModalOpen} toggleModal={toggleModal} />
+       </div>
+
+
           <div className="chat-header">
             <h2 className="chat-title">
               {selectedChat.isGroupChat

@@ -27,7 +27,13 @@ const port = process.env.PORT || 3000;
 
 app.use(express.json());
 app.use(cors({
-    origin: ['http://localhost:5173',],
+    origin: [
+        "http://localhost:5173",
+        "http://172.25.144.1:5173",
+        "http://192.168.126.1:5173",
+        "http://192.168.174.1:5173",
+        "http://192.168.6.100:5173"
+      ],
     methods: ['GET', 'POST', 'PATCH', 'DELETE', 'PUT'],
     credentials:true
 }));
@@ -48,14 +54,20 @@ app.get("/api/chats/:id",(req,res)=>{
     res.send(chats.default.find((chat)=>chat._id===req.params.id));
 })
 
-const server = app.listen(port, () => {
+const server = app.listen(port, '0.0.0.0', () => {
     console.log(`Server is running on http://localhost:${port}`);
 });
 
 const io = require("socket.io")(server, {
     pingTimeout: 60000,
     cors: {
-        origin: "http://localhost:5173",
+        origin: [
+            "http://localhost:5173",
+            "http://172.25.144.1:5173",
+            "http://192.168.126.1:5173",
+            "http://192.168.174.1:5173",
+            "http://192.168.6.100:5173"
+          ],
         methods: ["GET", "POST"],
         credentials:true
     },

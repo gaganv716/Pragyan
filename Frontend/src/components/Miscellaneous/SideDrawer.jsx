@@ -6,6 +6,10 @@ import { ChatState } from '../../Context/chatProvider';
 import axios from 'axios';
 import { useCustomToast } from "../Miscellaneous/Toast";
 
+
+const Backend = import.meta.env.VITE_BACKEND_URL;
+const Cloudinary = import.meta.env.VITE_CLOUDINARY_URL ;
+
 const SideDrawer = () => {
   
 
@@ -56,7 +60,7 @@ const SideDrawer = () => {
         },
       };
 
-      const { data } = await axios.get(`http://localhost:3000/api/users?search=${search}`, config);
+      const { data } = await axios.get(`${Backend}/api/users?search=${search}`, config);
       setLoading(false);
       setSearchResult(data);
     } catch (error) {
@@ -89,7 +93,7 @@ const SideDrawer = () => {
           Authorization: `Bearer ${user.token}`,
         },
       };
-      const { data } = await axios.post(`http://localhost:3000/api/chats`, { userId }, config);
+      const { data } = await axios.post(`${Backend}/api/chats`, { userId }, config);
 
       if (!chats.find((c) => c._id === data._id)) setChats([data, ...chats]);
       setSelectedChat(data);
