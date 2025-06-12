@@ -28,12 +28,12 @@ const port = process.env.PORT || 3000;
 app.use(express.json());
 app.use(cors({
     origin: [
-        "http://localhost:5173",
-        "http://172.25.144.1:5173",
-        "http://192.168.126.1:5173",
-        "http://192.168.174.1:5173",
-        "http://192.168.6.100:5173"
-      ],
+  "http://localhost:5173",
+  "http://172.19.176.1:5173",
+  "http://192.168.126.1:5173",
+  "http://192.168.174.1:5173",
+  "http://192.168.7.100:5173"
+],
     methods: ['GET', 'POST', 'PATCH', 'DELETE', 'PUT'],
     credentials:true
 }));
@@ -62,12 +62,12 @@ const io = require("socket.io")(server, {
     pingTimeout: 60000,
     cors: {
         origin: [
-            "http://localhost:5173",
-            "http://172.25.144.1:5173",
-            "http://192.168.126.1:5173",
-            "http://192.168.174.1:5173",
-            "http://192.168.6.100:5173"
-          ],
+  "http://localhost:5173",
+  "http://172.19.176.1:5173",
+  "http://192.168.126.1:5173",
+  "http://192.168.174.1:5173",
+  "http://192.168.7.100:5173"
+],
         methods: ["GET", "POST"],
         credentials:true
     },
